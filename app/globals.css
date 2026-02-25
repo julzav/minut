@@ -124,3 +124,87 @@
     @apply bg-background text-foreground;
   }
 }
+
+/*
+ * LiveKit theme integration with shadcn/next-themes.
+ *
+ * We use data-lk-theme="minut" (a custom value) instead of "default".
+ * This means LiveKit's built-in [data-lk-theme="default"] dark palette rule
+ * never matches our elements — zero specificity conflict.
+ *
+ * LiveKit's structural CSS uses [data-lk-theme] (no value), which matches
+ * any attribute value, so fonts, layouts, and component classes still apply.
+ *
+ * All --lk-* color variables reference shadcn tokens (--background, --foreground,
+ * etc.) which automatically resolve to light or dark values based on the .dark
+ * class added by next-themes — no JavaScript needed for theme switching.
+ *
+ * Semantic AV colors (--lk-accent-bg blue, --lk-danger red, --lk-success green,
+ * connection quality indicators) are kept at LiveKit's defaults.
+ */
+[data-lk-theme="minut"] {
+  color-scheme: light;
+  /* Typography */
+  --lk-font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  --lk-font-size: 1rem;
+  --lk-line-height: 1.5;
+  --lk-border-radius: var(--radius);
+  /* Layout */
+  --lk-grid-gap: 0.5rem;
+  --lk-control-bar-height: 69px;
+  --lk-chat-header-height: 69px;
+  /* Backgrounds */
+  --lk-bg: var(--background);
+  --lk-bg2: var(--muted);
+  --lk-bg3: var(--accent);
+  --lk-bg4: var(--border);
+  --lk-bg5: var(--input);
+  /* Text */
+  --lk-fg: var(--foreground);
+  --lk-fg2: var(--foreground);
+  --lk-fg3: var(--muted-foreground);
+  --lk-fg4: var(--muted-foreground);
+  --lk-fg5: var(--muted-foreground);
+  /* Borders & elevation */
+  --lk-border-color: var(--border);
+  --lk-box-shadow: 0 0.5rem 1.5rem oklch(0 0 0 / 0.08);
+  --lk-drop-shadow: oklch(0 0 0 / 0.15) 0px 0px 24px;
+  /* Controls */
+  --lk-control-fg: var(--foreground);
+  --lk-control-bg: var(--secondary);
+  --lk-control-hover-bg: var(--accent);
+  --lk-control-active-bg: var(--muted);
+  --lk-control-active-hover-bg: var(--secondary);
+  /* Semantic AV accent (blue) — unchanged, carries AV state meaning */
+  --lk-accent-fg: #fff;
+  --lk-accent-bg: #1f8cf9;
+  --lk-accent2: rgb(50.867826087, 150.2, 249.532173913);
+  --lk-accent3: rgb(70.7356521739, 160.4, 250.0643478261);
+  --lk-accent4: rgb(90.6034782609, 170.6, 250.5965217391);
+  /* Semantic danger (red) */
+  --lk-danger-fg: #fff;
+  --lk-danger: #f91f31;
+  --lk-danger2: rgb(249.532173913, 50.867826087, 67.2713043478);
+  --lk-danger3: rgb(250.0643478261, 70.7356521739, 85.5426086957);
+  --lk-danger4: rgb(250.5965217391, 90.6034782609, 103.8139130435);
+  /* Semantic success (green) */
+  --lk-success-fg: #fff;
+  --lk-success: #1ff968;
+  --lk-success2: rgb(50.867826087, 249.532173913, 117.3930434783);
+  --lk-success3: rgb(70.7356521739, 250.0643478261, 130.7860869565);
+  --lk-success4: rgb(90.6034782609, 250.5965217391, 144.1791304348);
+  /* Connection quality indicators */
+  --lk-connection-excellent: #06db4d;
+  --lk-connection-good: #f9b11f;
+  --lk-connection-poor: #f91f31;
+}
+
+/*
+ * Dark mode: color-scheme and shadows adjust; all color variables
+ * auto-update because the shadcn tokens they reference change under .dark.
+ */
+.dark [data-lk-theme="minut"] {
+  color-scheme: dark;
+  --lk-box-shadow: 0 0.5rem 1.5rem oklch(0 0 0 / 0.4);
+  --lk-drop-shadow: oklch(1 0 0 / 0.15) 0px 0px 24px;
+}
