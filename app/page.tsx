@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { ModeToggle } from '@/components/mode-toggle';
 
 export default function Page() {
   const [meetingCode, setMeetingCode] = useState('');
@@ -31,6 +32,7 @@ export default function Page() {
           <button className="text-gray-600 hover:text-gray-900 px-4 py-2 rounded-lg hover:bg-gray-100">
             Sign in
           </button>
+          <ModeToggle />
         </div>
       </header>
 
