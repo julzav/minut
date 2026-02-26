@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { ModeToggle } from '@/components/mode-toggle';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -133,10 +134,12 @@ export default function Page() {
 
       {/* Footer */}
       <footer className="border-t border-border py-8 px-8 text-center text-muted-foreground">
-        <div className="max-w-4xl mx-auto">
-          <p>
-            &copy; 2026 minut. Built with AI-powered meeting intelligence.
-          </p>
+        <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-4 text-sm">
+          <p>&copy; 2026 minut. Built with AI-powered meeting intelligence.</p>
+          <span className="hidden sm:block">&middot;</span>
+          <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</Link>
+          <span className="hidden sm:block">&middot;</span>
+          <Link href="/terms" className="hover:text-foreground transition-colors">Terms &amp; Conditions</Link>
         </div>
       </footer>
     </div>
