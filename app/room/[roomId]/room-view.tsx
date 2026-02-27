@@ -12,9 +12,10 @@ import {
 
 interface RoomViewProps {
   roomId: string;
+  userName: string;
 }
 
-export function RoomView({ roomId }: RoomViewProps) {
+export function RoomView({ roomId, userName }: RoomViewProps) {
   const router = useRouter();
   const [userChoices, setUserChoices] = useState<LocalUserChoices | null>(null);
   const [token, setToken] = useState('');
@@ -98,7 +99,7 @@ export function RoomView({ roomId }: RoomViewProps) {
         data-lk-theme="minut"
         onSubmit={setUserChoices}
         onError={(err) => setError(err.message)}
-        defaults={{ username: '', videoEnabled: true, audioEnabled: true }}
+        defaults={{ username: userName, videoEnabled: true, audioEnabled: true }}
       >
         {error && <p className="lk-prejoin-error">{error}</p>}
       </PreJoin>

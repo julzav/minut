@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ModeToggle } from '@/components/mode-toggle';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useSession, signOut } from '@/lib/auth-client';
 
 function generateRoomId(): string {
   const segment = (len: number) =>
@@ -13,9 +14,24 @@ function generateRoomId(): string {
   return `${segment(3)}-${segment(4)}-${segment(3)}`;
 }
 
+function UserAvatar({ name }: { name: string }) {
+  const initials = name
+    .split(' ')
+    .map((n) => n[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
+  return (
+    <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+      <span className="text-primary-foreground font-bold text-sm">{initials}</span>
+    </div>
+  );
+}
+
 export default function Page() {
   const router = useRouter();
   const [meetingCode, setMeetingCode] = useState('');
+  const { data: session } = useSession();
 
   const handleNewMeeting = () => {
     router.push(`/room/${generateRoomId()}`);
@@ -25,6 +41,11 @@ export default function Page() {
     if (meetingCode.trim()) {
       router.push(`/room/${meetingCode.trim()}`);
     }
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.refresh();
   };
 
   return (
@@ -38,7 +59,21 @@ export default function Page() {
           <span className="text-xl font-semibold text-foreground">minut</span>
         </div>
         <div className="flex items-center space-x-4">
-          <Button variant="ghost">Sign in</Button>
+          {session?.user ? (
+            <>
+              <UserAvatar name={session.user.name} />
+              <span className="text-sm text-muted-foreground hidden sm:block">
+                {session.user.name}
+              </span>
+              <Button variant="ghost" onClick={handleSignOut}>
+                Sign out
+              </Button>
+            </>
+          ) : (
+            <Button variant="ghost" asChild>
+              <Link href="/sign-in">Sign in</Link>
+            </Button>
+          )}
           <ModeToggle />
         </div>
       </header>

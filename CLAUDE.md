@@ -36,7 +36,9 @@ npx playwright install chromium
 
 ### Current state
 
-- **Landing page** (`app/page.tsx`): hero section with working "New meeting" (generates a random room ID) and "Join" (navigates to the typed code) flows. Uses shadcn `Button`/`Input` and theme tokens throughout.
-- **Room route** (`app/room/[roomId]/`): Server Component (`page.tsx`) + Client Component (`room-view.tsx`). Renders the LiveKit `PreJoin` component, fetches a JWT from the token API, then renders `LiveKitRoom` + `VideoConference`. Leaving the room redirects to home.
-- **Token API** (`app/api/livekit/token/route.ts`): `GET /api/livekit/token?roomName=&participantName=` — mints a LiveKit JWT using `livekit-server-sdk`. Requires `LIVEKIT_URL`, `LIVEKIT_API_KEY`, and `LIVEKIT_API_SECRET` env vars (see `.env.local.example`).
-- No authentication or database is wired up yet.
+- **Landing page** (`app/page.tsx`): hero section with "New meeting" and "Join" flows. Auth-aware header — shows user avatar/name + sign out when logged in, sign in link when logged out.
+- **Room route** (`app/room/[roomId]/`): Server Component (`page.tsx`) + Client Component (`room-view.tsx`). Server component checks session and email verification, creates a `meetings` record on first join, then passes `userName` to `RoomView`. `RoomView` renders `PreJoin` (name pre-filled), fetches a LiveKit JWT, then renders `LiveKitRoom` + `VideoConference`. Leaving redirects home.
+- **Token API** (`app/api/livekit/token/route.ts`): `GET /api/livekit/token?roomName=&participantName=` — mints a LiveKit JWT using `livekit-server-sdk`. Requires `LIVEKIT_URL`, `LIVEKIT_API_KEY`, and `LIVEKIT_API_SECRET` env vars.
+- **Auth** (`lib/auth.ts`, `lib/auth-client.ts`): better-auth with email/password and email verification. Resend sends verification emails. Auth API at `app/api/auth/[...all]/route.ts`. Middleware (`middleware.ts`) guards `/room/*` at the edge via session cookie.
+- **Auth pages** (`app/(auth)/`): `sign-in`, `sign-up`, `verify-email` — all client components using react-hook-form + zod.
+- **Database** (`db/`): Drizzle ORM + Neon HTTP driver. Schema in `db/schema/` (better-auth tables + `meetings`). Run `npx drizzle-kit generate && npx drizzle-kit migrate` to apply migrations. Requires `DATABASE_URL` env var.
