@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'motion/react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { toast } from 'sonner';
 import { authClient } from '@/lib/auth-client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -36,7 +36,6 @@ type FormValues = z.infer<typeof schema>;
 
 export default function SignUpPage() {
   const router = useRouter();
-  const [serverError, setServerError] = useState('');
 
   const {
     register,
@@ -45,7 +44,6 @@ export default function SignUpPage() {
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
 
   const onSubmit = async (values: FormValues) => {
-    setServerError('');
     const { error } = await authClient.signUp.email({
       name: values.name,
       email: values.email,
@@ -53,7 +51,7 @@ export default function SignUpPage() {
     });
 
     if (error) {
-      setServerError(error.message ?? 'Sign up failed');
+      toast.error(error.message ?? 'Sign up failed');
       return;
     }
 
@@ -163,10 +161,6 @@ export default function SignUpPage() {
             </p>
           )}
         </div>
-
-        {serverError && (
-          <p className="text-xs text-destructive">{serverError}</p>
-        )}
 
         <Button type="submit" className="w-full h-10" disabled={isSubmitting}>
           {isSubmitting ? 'Creating account…' : 'Create account'}

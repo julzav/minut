@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'motion/react';
 import { Video, Mic, ClipboardCheck, Shield, ArrowRight } from 'lucide-react';
+import { toast } from 'sonner';
 import { ModeToggle } from '@/components/mode-toggle';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -95,6 +96,7 @@ export default function Page() {
 
   const handleSignOut = async () => {
     await signOut();
+    toast.success('Signed out');
     router.refresh();
   };
 

@@ -2,6 +2,7 @@
 
 import '@livekit/components-styles';
 import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import {
   LiveKitRoom,
@@ -40,18 +41,27 @@ export function RoomView({ roomId, userName }: RoomViewProps) {
       roomName: roomId,
       participantName: userChoices.username,
     });
-    fetch(`/api/livekit/token?${params}`)
+
+    const tokenPromise = fetch(`/api/livekit/token?${params}`)
       .then((res) => {
         if (!res.ok) throw new Error('Failed to get token');
         return res.json() as Promise<{ token: string }>;
       })
       .then(({ token: jwt }) => {
         setToken(jwt);
-      })
-      .catch((err: Error) => {
-        setError(err.message ?? 'Something went wrong');
-        setUserChoices(null);
+        return jwt;
       });
+
+    toast.promise(tokenPromise, {
+      loading: 'Connecting to room…',
+      success: 'Connected!',
+      error: (err: Error) => err.message ?? 'Failed to connect',
+    });
+
+    tokenPromise.catch((err: Error) => {
+      setError(err.message ?? 'Something went wrong');
+      setUserChoices(null);
+    });
   }, [userChoices, roomId]);
 
   if (phase === 'loading') {
