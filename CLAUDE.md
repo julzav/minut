@@ -2,6 +2,8 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+**Planned features and backlog**: see `ROADMAP.md`.
+
 ## Commands
 
 ```bash
@@ -42,3 +44,4 @@ npx playwright install chromium
 - **Auth** (`lib/auth.ts`, `lib/auth-client.ts`): better-auth with email/password and email verification. Resend sends verification emails. Auth API at `app/api/auth/[...all]/route.ts`. Middleware (`middleware.ts`) guards `/room/*` at the edge via session cookie.
 - **Auth pages** (`app/(auth)/`): `sign-in`, `sign-up`, `verify-email` — all client components using react-hook-form + zod.
 - **Database** (`db/`): Drizzle ORM + Neon HTTP driver. Schema in `db/schema/` (better-auth tables + `meetings`). Run `npx drizzle-kit generate && npx drizzle-kit migrate` to apply migrations. Requires `DATABASE_URL` env var.
+- **Error monitoring** (`instrumentation.ts`, `instrumentation-client.ts`, `sentry.server.config.ts`, `sentry.edge.config.ts`): Sentry via `@sentry/nextjs`. `withSentryConfig` wraps `next.config.ts`. Tunnel at `/monitoring`. DSN in `NEXT_PUBLIC_SENTRY_DSN`. Delete `app/sentry-example-page/` once Sentry is verified working.
