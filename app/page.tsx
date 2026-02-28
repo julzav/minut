@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { motion } from 'motion/react';
+import { Video, Mic, ClipboardCheck, Shield, ArrowRight } from 'lucide-react';
 import { ModeToggle } from '@/components/mode-toggle';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,25 +24,73 @@ function UserAvatar({ name }: { name: string }) {
     .join('')
     .toUpperCase();
   return (
-    <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-      <span className="text-primary-foreground font-bold text-sm">{initials}</span>
+    <div className="w-7 h-7 bg-brand rounded-full flex items-center justify-center shrink-0">
+      <span className="text-white font-bold text-xs">{initials}</span>
     </div>
   );
 }
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 14 },
+  visible: { opacity: 1, y: 0 },
+};
+
+const stagger = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.09 } },
+};
+
+const features = [
+  {
+    icon: Mic,
+    title: 'AI Transcription',
+    description:
+      'Real-time transcription with speaker identification and precise timestamps.',
+  },
+  {
+    icon: ClipboardCheck,
+    title: 'Smart Minutes',
+    description:
+      'Structured summaries with action items and key decisions — generated automatically.',
+  },
+  {
+    icon: Shield,
+    title: 'Secure & Private',
+    description:
+      'End-to-end encrypted meetings with secure cloud storage for your transcripts.',
+  },
+];
+
+const steps = [
+  {
+    number: '01',
+    title: 'Start or join a meeting',
+    description:
+      'Create a room in one click or enter an existing meeting code.',
+  },
+  {
+    number: '02',
+    title: 'AI transcribes in real time',
+    description:
+      'Every word captured automatically — no manual note-taking required.',
+  },
+  {
+    number: '03',
+    title: 'Get your minutes instantly',
+    description:
+      'Receive a structured summary with decisions and action items after each call.',
+  },
+];
 
 export default function Page() {
   const router = useRouter();
   const [meetingCode, setMeetingCode] = useState('');
   const { data: session } = useSession();
 
-  const handleNewMeeting = () => {
-    router.push(`/room/${generateRoomId()}`);
-  };
+  const handleNewMeeting = () => router.push(`/room/${generateRoomId()}`);
 
   const handleJoinMeeting = () => {
-    if (meetingCode.trim()) {
-      router.push(`/room/${meetingCode.trim()}`);
-    }
+    if (meetingCode.trim()) router.push(`/room/${meetingCode.trim()}`);
   };
 
   const handleSignOut = async () => {
@@ -50,131 +100,228 @@ export default function Page() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="flex items-center justify-between px-8 py-4 border-b border-border">
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-sm">M</span>
+      {/* Nav */}
+      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border">
+        <div className="max-w-6xl mx-auto flex items-center justify-between px-6 h-14">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 bg-brand rounded-full flex items-center justify-center">
+              <span className="text-white font-bold text-xs">M</span>
+            </div>
+            <span className="font-semibold text-foreground tracking-tight">minut</span>
           </div>
-          <span className="text-xl font-semibold text-foreground">minut</span>
-        </div>
-        <div className="flex items-center space-x-4">
-          {session?.user ? (
-            <>
-              <UserAvatar name={session.user.name} />
-              <span className="text-sm text-muted-foreground hidden sm:block">
-                {session.user.name}
-              </span>
-              <Button variant="ghost" onClick={handleSignOut}>
-                Sign out
+
+          <div className="flex items-center gap-2">
+            {session?.user ? (
+              <>
+                <UserAvatar name={session.user.name} />
+                <span className="text-sm text-muted-foreground hidden sm:block">
+                  {session.user.name}
+                </span>
+                <Button variant="ghost" size="sm" onClick={handleSignOut}>
+                  Sign out
+                </Button>
+              </>
+            ) : (
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/sign-in">Sign in</Link>
               </Button>
-            </>
-          ) : (
-            <Button variant="ghost" asChild>
-              <Link href="/sign-in">Sign in</Link>
-            </Button>
-          )}
-          <ModeToggle />
+            )}
+            <ModeToggle />
+          </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="flex flex-col items-center justify-center min-h-[80vh] px-4">
-        <div className="max-w-2xl mx-auto text-center">
-          {/* Hero Section */}
-          <div className="mb-12">
-            <h1 className="text-4xl font-light text-foreground mb-4">
-              Video meetings with AI-powered minutes
-            </h1>
-            <p className="text-lg text-muted-foreground mb-8">
-              Connect with anyone, anywhere. Get automatic transcripts and intelligent meeting summaries powered by AI.
-            </p>
-          </div>
+      <main>
+        {/* Hero */}
+        <section className="max-w-6xl mx-auto px-6 pt-24 pb-20">
+          <motion.div
+            className="max-w-3xl"
+            variants={stagger}
+            initial="hidden"
+            animate="visible"
+          >
+            {/* Badge */}
+            <motion.div variants={fadeUp} transition={{ duration: 0.5 }}>
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-brand/20 bg-brand/5 text-brand text-xs font-medium mb-8">
+                <span className="w-1.5 h-1.5 rounded-full bg-brand" />
+                AI-powered meeting intelligence
+              </span>
+            </motion.div>
 
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-12">
-            {/* New Meeting Button */}
-            <Button
-              onClick={handleNewMeeting}
-              className="min-w-50 text-lg h-12 px-8"
+            {/* Headline */}
+            <motion.h1
+              variants={fadeUp}
+              transition={{ duration: 0.55 }}
+              className="text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tight text-foreground leading-[1.08] mb-6"
             >
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-              </svg>
-              New meeting
-            </Button>
+              Meet smarter.
+              <br />
+              <span className="text-muted-foreground font-light">
+                Leave with minutes.
+              </span>
+            </motion.h1>
 
-            <span className="text-muted-foreground hidden sm:block">or</span>
+            {/* Subheading */}
+            <motion.p
+              variants={fadeUp}
+              transition={{ duration: 0.5 }}
+              className="text-lg text-muted-foreground mb-10 max-w-xl leading-relaxed"
+            >
+              AI-generated transcripts, decisions and action items for every
+              meeting — automatically, no effort required.
+            </motion.p>
 
-            {/* Join Meeting Section */}
-            <div className="flex flex-col sm:flex-row items-center gap-3">
-              <Input
-                type="text"
-                value={meetingCode}
-                onChange={(e) => setMeetingCode(e.target.value)}
-                placeholder="Enter meeting code"
-                className="min-w-50 h-12 text-center sm:text-left"
-              />
+            {/* CTAs */}
+            <motion.div
+              variants={fadeUp}
+              transition={{ duration: 0.5 }}
+              className="flex flex-col sm:flex-row items-start sm:items-center gap-3"
+            >
               <Button
-                variant="secondary"
-                onClick={handleJoinMeeting}
-                disabled={!meetingCode.trim()}
-                className="min-w-25 h-12"
+                onClick={handleNewMeeting}
+                className="h-11 px-5 text-sm font-medium gap-2"
               >
-                Join
+                <Video className="w-4 h-4" />
+                New meeting
               </Button>
-            </div>
-          </div>
 
-          {/* Features */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <div className="text-center p-6">
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
+              <div className="flex items-center gap-2">
+                <Input
+                  type="text"
+                  value={meetingCode}
+                  onChange={(e) => setMeetingCode(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleJoinMeeting()}
+                  placeholder="Enter a code"
+                  className="h-11 w-44 text-sm"
+                />
+                <Button
+                  variant="ghost"
+                  onClick={handleJoinMeeting}
+                  disabled={!meetingCode.trim()}
+                  className="h-11 px-4 text-sm"
+                >
+                  Join
+                </Button>
               </div>
-              <h3 className="text-lg font-medium text-foreground mb-2">AI Transcription</h3>
-              <p className="text-muted-foreground">
-                Real-time transcription of your meetings with speaker identification and timestamps.
-              </p>
-            </div>
+            </motion.div>
+          </motion.div>
+        </section>
 
-            <div className="text-center p-6">
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-medium text-foreground mb-2">Smart Minutes</h3>
-              <p className="text-muted-foreground">
-                Automatically generated meeting summaries with action items and key decisions.
-              </p>
-            </div>
+        {/* Features */}
+        <section className="max-w-6xl mx-auto px-6 py-20 border-t border-border">
+          <motion.div
+            variants={stagger}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-80px' }}
+          >
+            <motion.p
+              variants={fadeUp}
+              transition={{ duration: 0.5 }}
+              className="text-xs font-medium text-muted-foreground uppercase tracking-widest mb-12"
+            >
+              What you get
+            </motion.p>
 
-            <div className="text-center p-6">
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-medium text-foreground mb-2">Secure & Private</h3>
-              <p className="text-muted-foreground">
-                End-to-end encrypted meetings with secure cloud storage for your transcripts.
-              </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+              {features.map((f) => (
+                <motion.div
+                  key={f.title}
+                  variants={fadeUp}
+                  transition={{ duration: 0.5 }}
+                >
+                  <div className="w-10 h-10 rounded-lg bg-brand/8 flex items-center justify-center mb-5">
+                    <f.icon className="w-5 h-5 text-brand" />
+                  </div>
+                  <h3 className="font-semibold text-foreground mb-2">{f.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {f.description}
+                  </p>
+                </motion.div>
+              ))}
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </section>
+
+        {/* How it works */}
+        <section className="max-w-6xl mx-auto px-6 py-20 border-t border-border">
+          <motion.div
+            variants={stagger}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-80px' }}
+          >
+            <motion.p
+              variants={fadeUp}
+              transition={{ duration: 0.5 }}
+              className="text-xs font-medium text-muted-foreground uppercase tracking-widest mb-12"
+            >
+              How it works
+            </motion.p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+              {steps.map((step) => (
+                <motion.div
+                  key={step.number}
+                  variants={fadeUp}
+                  transition={{ duration: 0.5 }}
+                >
+                  <span className="text-4xl font-light text-brand/25 tabular-nums mb-4 block">
+                    {step.number}
+                  </span>
+                  <h3 className="font-semibold text-foreground mb-2">{step.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {step.description}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </section>
+
+        {/* CTA — only when signed out */}
+        {!session?.user && (
+          <section className="max-w-6xl mx-auto px-6 py-20 border-t border-border">
+            <motion.div
+              initial={{ opacity: 0, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-80px' }}
+              transition={{ duration: 0.6 }}
+            >
+              <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground mb-4">
+                Ready to meet smarter?
+              </h2>
+              <p className="text-muted-foreground mb-8 max-w-sm leading-relaxed">
+                Create an account in seconds — no credit card required.
+              </p>
+              <Button asChild className="h-11 px-5 gap-2">
+                <Link href="/sign-up">
+                  Get started free
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </Button>
+            </motion.div>
+          </section>
+        )}
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-border py-8 px-8 text-center text-muted-foreground">
-        <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-4 text-sm">
-          <p>&copy; 2026 minut. Built with AI-powered meeting intelligence.</p>
-          <span className="hidden sm:block">&middot;</span>
-          <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</Link>
-          <span className="hidden sm:block">&middot;</span>
-          <Link href="/terms" className="hover:text-foreground transition-colors">Terms &amp; Conditions</Link>
+      <footer className="border-t border-border py-8 px-6">
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <div className="w-5 h-5 bg-brand rounded-full flex items-center justify-center">
+              <span className="text-white font-bold" style={{ fontSize: '9px' }}>M</span>
+            </div>
+            <span>&copy; 2026 minut</span>
+          </div>
+          <div className="flex items-center gap-6">
+            <Link href="/privacy" className="hover:text-foreground transition-colors">
+              Privacy
+            </Link>
+            <Link href="/terms" className="hover:text-foreground transition-colors">
+              Terms
+            </Link>
+          </div>
         </div>
       </footer>
     </div>
