@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useSession } from '@/lib/auth-client';
+import { ModeToggle } from '@/components/mode-toggle';
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -17,15 +18,18 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <header className="flex items-center px-8 py-4 border-b border-border">
-        <Link href="/" className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-sm">M</span>
-          </div>
-          <span className="text-xl font-semibold text-foreground">minut</span>
-        </Link>
+      <header className="border-b border-border">
+        <div className="max-w-6xl mx-auto flex items-center justify-between px-6 h-14">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-7 h-7 bg-brand rounded-full flex items-center justify-center">
+              <span className="text-white font-bold text-xs">M</span>
+            </div>
+            <span className="font-semibold text-foreground tracking-tight">minut</span>
+          </Link>
+          <ModeToggle />
+        </div>
       </header>
-      <main className="flex-1 flex items-center justify-center px-4 py-12">
+      <main className="flex-1 flex items-center justify-center px-6 py-16">
         {children}
       </main>
     </div>
