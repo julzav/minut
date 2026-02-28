@@ -1,12 +1,13 @@
 'use client';
 
-import { Suspense, useState } from 'react';
+import { Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'motion/react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { toast } from 'sonner';
 import { authClient } from '@/lib/auth-client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -31,7 +32,6 @@ function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') ?? '/';
-  const [serverError, setServerError] = useState('');
 
   const {
     register,
@@ -40,7 +40,6 @@ function SignInForm() {
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
 
   const onSubmit = async (values: FormValues) => {
-    setServerError('');
     const { error } = await authClient.signIn.email({
       email: values.email,
       password: values.password,
@@ -51,7 +50,7 @@ function SignInForm() {
         router.push('/verify-email');
         return;
       }
-      setServerError(error.message ?? 'Sign in failed');
+      toast.error(error.message ?? 'Sign in failed');
       return;
     }
 
@@ -112,9 +111,17 @@ function SignInForm() {
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="password" className="text-sm font-medium">
-            Password
-          </Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="password" className="text-sm font-medium">
+              Password
+            </Label>
+            <Link
+              href="/forgot-password"
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Forgot password?
+            </Link>
+          </div>
           <Input
             id="password"
             type="password"
@@ -126,10 +133,6 @@ function SignInForm() {
             <p className="text-xs text-destructive">{errors.password.message}</p>
           )}
         </div>
-
-        {serverError && (
-          <p className="text-xs text-destructive">{serverError}</p>
-        )}
 
         <Button type="submit" className="w-full h-10" disabled={isSubmitting}>
           {isSubmitting ? 'Signing in…' : 'Sign in'}
