@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ModeToggle } from '@/components/mode-toggle';
 
 export const metadata = {
   title: 'Privacy Policy – minut',
@@ -8,13 +9,16 @@ export const metadata = {
 export default function PrivacyPolicyPage() {
   return (
     <div className="min-h-screen bg-background">
-      <header className="flex items-center justify-between px-8 py-4 border-b border-border">
-        <Link href="/" className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-sm">M</span>
-          </div>
-          <span className="text-xl font-semibold text-foreground">minut</span>
-        </Link>
+      <header className="border-b border-border">
+        <div className="max-w-6xl mx-auto flex items-center justify-between px-6 h-14">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-7 h-7 bg-brand rounded-full flex items-center justify-center">
+              <span className="text-white font-bold text-xs">M</span>
+            </div>
+            <span className="font-semibold text-foreground tracking-tight">minut</span>
+          </Link>
+          <ModeToggle />
+        </div>
       </header>
 
       <main className="max-w-3xl mx-auto px-6 py-16">
