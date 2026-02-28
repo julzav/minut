@@ -1,85 +1,165 @@
 # minut — Roadmap
 
-Feature backlog and planned work. Items within each milestone are roughly priority-ordered.
+Technical execution plan. See `VISION.md` for product positioning and business model.
+
+Items within each phase are roughly priority-ordered.
 
 ---
 
-## Milestone 1 — Polish & Growth (current focus)
+## Phase 0 — Foundation (shipped)
 
-### UI Redesign
-- [ ] Rework landing page with modern design (hero, feature sections, CTA, footer)
-- [ ] Consistent design system: typography scale, spacing, color tokens in Tailwind v4 `@theme`
-- [ ] Animated elements (Framer Motion or CSS animations)
-- [ ] Dark mode support
-- [ ] Responsive / mobile-first layout audit
+The reference implementation: a working end-to-end conferencing app.
 
-### Auth Enhancements
-- [ ] Google OAuth (social sign-in via better-auth Google provider)
-- [ ] GitHub OAuth (optional, good for dev-audience product)
-- [ ] Remember-me / persistent sessions
-
-### Internationalization (i18n)
-- [ ] Set up `next-intl` (recommended for App Router)
-- [ ] Initial locales: English (`en`) and Spanish (`es`)
-- [ ] Locale detection + switcher UI component
-- [ ] Translate: landing page, auth pages, room UI labels
-
-### Observability
-- [ ] Sentry integration (error tracking + performance)
-  - Client-side: `Sentry.init` in `instrumentation-client.ts`
-  - Server-side: Next.js instrumentation hook (`instrumentation.ts`)
-  - Source maps upload in CI
-- [ ] Basic analytics (Vercel Analytics or Plausible — privacy-friendly)
+- [x] LiveKit room + VideoConference UI
+- [x] Pre-join screen with name/AV preview
+- [x] Auth (email/password + Google OAuth, email verification, password reset)
+- [x] Database schema (users, sessions, accounts, meetings)
+- [x] Landing page — editorial design, feature sections, animations
+- [x] Auth pages — sign in, sign up, verify email, forgot/reset password
+- [x] Dark mode (class-based, system default)
+- [x] Sonner toasts across auth and room flows
+- [x] Sentry error monitoring
+- [x] Room middleware guard (session + email verification)
 
 ---
 
-## Milestone 2 — Core Product
+## Phase 1 — Platform Core
 
-### AI Meeting Features
-- [ ] Real-time transcription via LiveKit data channels + Whisper/Deepgram
+Transform the single-tenant app into a multi-tenant platform. This unlocks both product lines.
+
+### Multi-tenancy
+- [ ] `workspaces` table — an organisation/project boundary (name, slug, plan, owner)
+- [ ] `workspace_members` table — roles (owner, admin, member)
+- [ ] Workspace context in middleware — resolve workspace from subdomain or path prefix
+- [ ] Workspace creation flow (onboarding)
+
+### API Keys
+- [ ] `api_keys` table — hashed keys scoped to a workspace
+- [ ] Key generation UI in dashboard
+- [ ] API key authentication middleware for REST API routes
+- [ ] Key rotation and revocation
+
+### Usage Metering
+- [ ] `usage_events` table — participant-minutes, recording-minutes, AI tokens
+- [ ] LiveKit webhook receiver → record participant join/leave events
+- [ ] Usage aggregation (per workspace, per billing period)
+
+---
+
+## Phase 2 — AI Pipeline
+
+The core value proposition. Everything else is table stakes; this is the moat.
+
+### Transcription
+- [ ] LiveKit Egress → audio track recording per meeting
+- [ ] Whisper (or Deepgram) transcription job triggered on meeting end
+- [ ] `transcripts` table — segments with speaker, timestamp, text
+- [ ] Real-time partial transcripts via LiveKit data channels (stretch)
+
+### Summarisation
 - [ ] Post-meeting summary generation (Claude API)
-- [ ] Transcript storage in DB (`transcripts` table, linked to `meetings`)
-- [ ] Summary display page per meeting
+- [ ] Structured output: summary, action items, decisions, key moments
+- [ ] `summaries` table linked to `meetings`
+- [ ] Webhook dispatch: `transcript.ready`, `summary.ready`
+
+### Meeting History
+- [ ] Meeting detail page — transcript + summary display
+- [ ] Meeting history list (per workspace / per user)
+- [ ] Export: transcript as Markdown/PDF, summary as PDF
+
+---
+
+## Phase 3 — Developer API
+
+The developer product line. Makes minut integratable from any stack.
+
+### REST API
+- [ ] `POST /v1/rooms` — create a room (returns roomId, join URL)
+- [ ] `POST /v1/rooms/:id/token` — mint a participant token
+- [ ] `GET /v1/rooms/:id` — room status and metadata
+- [ ] `GET /v1/meetings` — list meetings for a workspace
+- [ ] `GET /v1/meetings/:id/transcript` — fetch transcript
+- [ ] `GET /v1/meetings/:id/summary` — fetch summary
+- [ ] API versioning strategy
+
+### Webhooks
+- [ ] `webhook_endpoints` table — URLs + signing secret per workspace
+- [ ] Webhook delivery: `meeting.started`, `meeting.ended`, `transcript.ready`, `summary.ready`
+- [ ] Retry logic with exponential backoff
+- [ ] Delivery log in dashboard
+
+### SDK
+- [ ] TypeScript/JavaScript SDK (`@minut/sdk`)
+- [ ] Python SDK (`minut-python`)
+- [ ] Embeddable React component (`@minut/react`) — drop-in `<MinutRoom />` component
+- [ ] Headless mode (BYO UI, SDK handles token + connection management)
+
+### Developer Experience
+- [ ] API reference documentation (OpenAPI spec + rendered docs)
+- [ ] Quickstart guides (Next.js, React, Python, plain JS)
+- [ ] Sandbox / test mode (no billable events)
+- [ ] API playground in dashboard
+
+---
+
+## Phase 4 — Dashboard Product
+
+The business product line. White-label conferencing for non-technical buyers.
+
+### Workspace Dashboard
+- [ ] Usage overview (minutes, recordings, AI usage, cost)
+- [ ] Meeting list with status, duration, participants
+- [ ] Billing page — current plan, usage this period, invoices
+
+### Custom Branding
+- [ ] Logo upload + primary colour override per workspace
+- [ ] Custom subdomain support (`meet.acme.com` → minut infra)
+- [ ] Custom email sender for meeting invites
+- [ ] Branded pre-join and in-room UI (theming via CSS variables)
 
 ### Meeting Management
-- [ ] Meeting history page (list past meetings for the user)
-- [ ] Meeting detail page (transcript + summary)
 - [ ] Schedule a meeting (future date/time, shareable link)
-- [ ] Invite participants by email
+- [ ] Invite participants by email (Resend)
+- [ ] Waiting room / lobby (host admits participants)
+- [ ] Meeting password / access control
 
 ### Room Improvements
 - [ ] Screen sharing
-- [ ] Chat panel (LiveKit data channel)
+- [ ] In-room chat panel (LiveKit data channel)
 - [ ] Participant list panel
-- [ ] Mute/video controls redesign
-- [ ] Waiting room / lobby
+- [ ] Raise hand / reactions
 
 ---
 
-## Milestone 3 — Scale & Quality
+## Phase 5 — Billing & Monetisation
 
-### Infrastructure
+- [ ] Stripe integration — subscriptions + usage-based billing
+- [ ] Plan enforcement (free tier limits, paid tier unlocks)
+- [ ] Usage alerts (email when approaching limits)
+- [ ] Invoicing and receipt emails
+- [ ] Enterprise contracts (custom pricing, SLA, invoicing)
+
+---
+
+## Phase 6 — Scale & Quality
+
 - [ ] CI/CD pipeline (GitHub Actions: lint → test → build → deploy)
 - [ ] Preview deployments (Vercel)
-- [ ] Environment variable validation with `@t3-oss/env-nextjs` or `zod`
-
-### Testing
-- [ ] Expand unit tests for auth flows
-- [ ] E2E tests for sign-up → room join happy path
-- [ ] E2E tests for i18n locale switching
-
-### Other
-- [ ] Terms of Service + Privacy Policy pages
-- [ ] Email templates (Resend React Email)
-- [ ] Rate limiting on auth endpoints
-- [ ] Webhook support (meeting ended events)
+- [ ] Environment variable validation (`@t3-oss/env-nextjs`)
+- [ ] E2E tests: sign-up → create room → join → meeting ends → transcript ready
+- [ ] Load testing (concurrent rooms, participant limits)
+- [ ] Rate limiting on API and auth endpoints
+- [ ] SOC 2 Type I groundwork (access logging, data retention policies)
 
 ---
 
-## Ideas / Parking Lot
+## Parking Lot / Future
 
-- [ ] Teams / organizations (multi-tenant)
-- [ ] Custom meeting backgrounds (virtual backgrounds)
-- [ ] Recording (LiveKit Egress)
+- [ ] GitHub OAuth (developer-audience product)
+- [ ] Internationalisation (next-intl, EN + ES)
+- [ ] Recording playback in-dashboard
+- [ ] Mobile SDK (React Native + LiveKit)
+- [ ] Teams / organisation hierarchy (sub-workspaces)
 - [ ] Zapier / Make integrations
-- [ ] Mobile apps (React Native + LiveKit)
+- [ ] AI notetaker bot that joins third-party meetings (Google Meet, Zoom)
+- [ ] Custom AI models (BYOK — bring your own Claude/OpenAI key)

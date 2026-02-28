@@ -2,7 +2,8 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-**Planned features and backlog**: see `ROADMAP.md`.
+**Product vision and business model**: see `VISION.md`.
+**Technical roadmap and feature backlog**: see `ROADMAP.md`.
 
 ## Commands
 
