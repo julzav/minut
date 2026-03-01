@@ -31,7 +31,7 @@ export function RoomView({ roomId, userName }: RoomViewProps) {
   // Navigate after the LiveKit tree has been fully removed from the DOM
   useEffect(() => {
     if (!leaving) return;
-    router.push('/');
+    router.push('/dashboard');
   }, [leaving, router]);
 
   useEffect(() => {
@@ -95,6 +95,7 @@ export function RoomView({ roomId, userName }: RoomViewProps) {
         onDisconnected={() => {
           if (leavingRef.current) return;
           leavingRef.current = true;
+          toast.success('You left the meeting');
           setLeaving(true);
         }}
       >
