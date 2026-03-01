@@ -119,6 +119,9 @@ export default function Page() {
                 <span className="text-sm text-muted-foreground hidden sm:block">
                   {session.user.name}
                 </span>
+                <Button variant="ghost" size="sm" asChild>
+                  <Link href="/dashboard">Dashboard</Link>
+                </Button>
                 <Button variant="ghost" size="sm" onClick={handleSignOut}>
                   Sign out
                 </Button>
