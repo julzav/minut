@@ -281,6 +281,49 @@ export default function Page() {
           </motion.div>
         </section>
 
+        {/* Platform */}
+        <section className="max-w-6xl mx-auto px-6 py-20 border-t border-border">
+          <motion.div
+            variants={stagger}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-80px' }}
+          >
+            <motion.p
+              variants={fadeUp}
+              transition={{ duration: 0.5 }}
+              className="text-xs font-medium text-muted-foreground uppercase tracking-widest mb-12"
+            >
+              For developers &amp; teams
+            </motion.p>
+
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8">
+              <motion.div variants={fadeUp} transition={{ duration: 0.5 }} className="max-w-xl">
+                <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground leading-snug mb-4">
+                  Add video conferencing
+                  <br />
+                  <span className="text-muted-foreground font-light">to any product.</span>
+                </h2>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  minut exposes a simple API and dashboard so you can embed
+                  live rooms, AI transcription, and meeting intelligence
+                  into your own app — or deploy a fully branded video
+                  conferencing product in minutes, no code required.
+                </p>
+              </motion.div>
+
+              <motion.div variants={fadeUp} transition={{ duration: 0.5 }} className="shrink-0">
+                <Button asChild variant="outline" className="h-11 px-5 gap-2">
+                  <Link href="/platform">
+                    Explore the platform
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </Button>
+              </motion.div>
+            </div>
+          </motion.div>
+        </section>
+
         {/* CTA — only when signed out */}
         {!session?.user && (
           <section className="max-w-6xl mx-auto px-6 py-20 border-t border-border">
@@ -317,6 +360,9 @@ export default function Page() {
             <span>&copy; 2026 minut</span>
           </div>
           <div className="flex items-center gap-6">
+            <Link href="/platform" className="hover:text-foreground transition-colors">
+              Platform
+            </Link>
             <Link href="/privacy" className="hover:text-foreground transition-colors">
               Privacy
             </Link>
